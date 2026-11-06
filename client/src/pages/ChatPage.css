@@ -1,0 +1,7 @@
+.chat { display: flex; flex-direction: column; height: 100dvh; max-width: 480px; margin: 0 auto; }
+.chat__header { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: var(--surface); }
+.chat__name {
+  flex: 1; min-width: 0; font-size: 16px; font-weight: 600;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.chat__list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; padding: 16px; }

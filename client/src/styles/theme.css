@@ -25,3 +25,8 @@
 
 * { box-sizing: border-box; }
 body { margin: 0; background: var(--bg); color: var(--text); }
+
+.icon-btn {
+  display: flex; padding: 8px; background: none; border: none;
+  color: var(--text); text-decoration: none; cursor: pointer;
+}

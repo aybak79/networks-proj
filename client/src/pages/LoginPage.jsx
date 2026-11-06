@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import logo from '../assets/logo.svg'
+import Logo from '../components/Logo'
 import TextField from '../components/TextField'
 import Button from '../components/Button'
 import './AuthPage.css'
@@ -23,7 +23,7 @@ export default function LoginPage() {
 
   return (
     <form className="auth" onSubmit={handleSubmit}>
-      <img className="auth__logo" src={logo} alt="Link" />
+      <Logo />
       <h1 className="auth__title">Welcome back to Link</h1>
       <p className="auth__subtitle">Log in to continue chatting</p>
       <TextField label="Username" value={username} onChange={setUsername} placeholder="Enter your username" />

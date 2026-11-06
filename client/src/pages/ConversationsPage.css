@@ -1,0 +1,13 @@
+.convos { display: flex; flex-direction: column; height: 100dvh; max-width: 480px; margin: 0 auto; }
+.convos__header { display: flex; flex-direction: column; gap: 12px; padding: 16px 16px 12px; }
+.convos__title-row { display: flex; align-items: center; justify-content: space-between; }
+.convos__title { margin: 0; font-size: 24px; font-weight: 700; }
+.convos__search {
+  height: 44px; padding: 0 16px; border-radius: 12px;
+  border: 1px solid color-mix(in srgb, var(--text-muted) 40%, transparent);
+  background: var(--surface); color: var(--text); font: inherit; font-size: 16px;
+}
+.convos__search::placeholder { color: var(--text-muted); }
+.convos__search:focus { outline: none; border-color: var(--primary); }
+/* Only the list scrolls; the header stays put. This replaces Figma's "fixed position". */
+.convos__list { flex: 1; overflow-y: auto; }
