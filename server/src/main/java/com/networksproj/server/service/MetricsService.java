@@ -17,6 +17,10 @@ public class MetricsService {
     private volatile double messagesPerSecond = 0;
     private volatile double peakMessagesPerSecond = 0;
 
+    private final AtomicLong totalBytes = new AtomicLong(0);
+    private long lastSampleBytes = 0;
+    private volatile double bytesPerSecond = 0;
+
     private final Instant startedAt = Instant.now();
 
     public void connectionOpened() {
@@ -32,6 +36,10 @@ public class MetricsService {
         totalMessages.incrementAndGet();
     }
 
+    public void bytesProcessed(int bytes) {
+        totalBytes.addAndGet(bytes);
+    }
+
     @Scheduled(fixedRate = 1000)
     void sampleRate() {
         long now = totalMessages.get();
@@ -40,6 +48,10 @@ public class MetricsService {
         if (messagesPerSecond > peakMessagesPerSecond) {
             peakMessagesPerSecond = messagesPerSecond;
         }
+
+        long nowBytes = totalBytes.get();
+        bytesPerSecond = nowBytes - lastSampleBytes;
+        lastSampleBytes = nowBytes;
     }
 
     public MetricsSnapshot snapshot() {
@@ -49,6 +61,8 @@ public class MetricsService {
                 totalMessages.get(),
                 messagesPerSecond,
                 peakMessagesPerSecond,
+                totalBytes.get(),
+                bytesPerSecond,
                 java.time.Duration.between(startedAt, Instant.now()).getSeconds());
     }
 
@@ -58,5 +72,7 @@ public class MetricsService {
             long totalMessages,
             double messagesPerSecond,
             double peakMessagesPerSecond,
+            long totalBytes,
+            double bytesPerSecond,
             long uptimeSeconds) {}
 }
