@@ -1,0 +1,13 @@
+.logo {
+  width: 188px;
+  height: 162.71px;
+  flex-shrink: 0;
+  align-self: center;
+  background-color: var(--primary);
+  mask-repeat: no-repeat;
+  mask-position: center;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  -webkit-mask-size: contain;
+}

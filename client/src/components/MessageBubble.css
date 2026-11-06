@@ -1,0 +1,10 @@
+.msg { display: flex; flex-direction: column; max-width: 75%; }
+.msg--me { align-self: flex-end; align-items: flex-end; }
+.msg--them { align-self: flex-start; align-items: flex-start; }
+.msg__bubble { padding: 12px 16px; font-size: 16px; line-height: 1.35; overflow-wrap: anywhere; }
+.msg--me .msg__bubble { background: var(--primary); color: var(--on-primary); border-radius: 16px 16px 4px 16px; }
+.msg--them .msg__bubble { background: var(--bubble-received); color: var(--text); border-radius: 16px 16px 16px 4px; }
+.msg__meta { display: flex; align-items: center; gap: 4px; margin-top: 2px; font-size: 12px; color: var(--text-muted); }
+/* spacing rule: 4px within a run from one sender, 12px when the sender changes */
+.msg + .msg { margin-top: 4px; }
+.msg--me + .msg--them, .msg--them + .msg--me { margin-top: 12px; }

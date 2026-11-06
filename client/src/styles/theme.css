@@ -1,0 +1,32 @@
+:root {
+  --bg: #FFF8F0;
+  --surface: #FFFFFF;
+  --primary: #7C3AED;
+  --on-primary: #FFFFFF;
+  --bubble-received: #FFE4D6;
+  --text: #2D1B4E;
+  --text-muted: #8A7BA0;
+  --send: #FF6B6B;
+  --highlight: #FFD166;
+  --success: #06D6A0;
+  --error: #EF476F;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+[data-theme='dark'] {
+  --bg: #1B1030;
+  --surface: #2A1B45;
+  --primary: #A78BFA;
+  --on-primary: #1B1030;
+  --bubble-received: #3D2B5E;
+  --text: #F5EEFF;
+  --text-muted: #B8A9D6;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); }
+
+.icon-btn {
+  display: flex; padding: 8px; background: none; border: none;
+  color: var(--text); text-decoration: none; cursor: pointer;
+}

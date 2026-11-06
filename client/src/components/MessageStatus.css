@@ -1,0 +1,3 @@
+.status { display: flex; color: var(--text-muted); }
+.status--delivered { color: var(--success); }
+.status--failed { color: var(--error); }

@@ -1,0 +1,9 @@
+.auth {
+  display: flex; flex-direction: column; justify-content: center; gap: 16px;
+  max-width: 480px; min-height: 100dvh; margin: 0 auto; padding: 24px;
+}
+.auth__title { margin: 0; font-size: 28px; font-weight: 700; text-align: center; }
+.auth__subtitle { margin: 0; color: var(--text-muted); text-align: center; }
+.auth__error { margin: 0; color: var(--error); font-size: 13px; font-weight: 500; }
+.auth__footer { margin: 0; text-align: center; color: var(--text-muted); font-size: 14px; }
+.auth__footer a { color: var(--primary); font-weight: 600; text-decoration: none; }

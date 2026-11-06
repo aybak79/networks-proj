@@ -1,0 +1,13 @@
+.inputbar { display: flex; gap: 8px; padding: 12px; background: var(--surface); }
+.inputbar__field {
+  flex: 1; height: 44px; padding: 0 16px; border-radius: 22px;
+  border: 1px solid color-mix(in srgb, var(--text-muted) 40%, transparent);
+  background: var(--bg); color: var(--text); font: inherit; font-size: 16px;
+}
+.inputbar__field::placeholder { color: var(--text-muted); }
+.inputbar__field:focus { outline: none; border-color: var(--primary); }
+.inputbar__send {
+  display: flex; align-items: center; justify-content: center;
+  width: 44px; height: 44px; border: none; border-radius: 50%;
+  background: var(--send); color: #2D1B4E; cursor: pointer; /* dark icon on coral in both themes */
+}
