@@ -14,7 +14,7 @@ public class RawChatWebSocketHandler extends TextWebSocketHandler {
     public RawChatWebSocketHandler(MetricsService metrics) {
         this.metrics = metrics;
     }
-
+    
     @Override
     public void afterConnectionEstablished(WebSocketSession session) {
         System.out.println("Connected: " + session.getId());
