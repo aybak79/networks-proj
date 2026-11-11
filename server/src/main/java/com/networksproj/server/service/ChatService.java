@@ -5,6 +5,7 @@ import com.networksproj.server.repository.MessageRepository;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
+@Service 
 public class ChatService {
     private final MessageRepository repo;
     public ChatService(MessageRepository repo) {this.repo = repo;}

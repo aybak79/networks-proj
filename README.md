@@ -113,3 +113,20 @@ client/
 ├── package-lock.json Locked dependency versions
 └── vite.config.js    Vite configuration
 ```
+
+//JSON EXAMPLES
+
+JOIN (client → server):
+ { "id": "message_id", "type": "JOIN", "from": "username", "to": null, "body": "last_timestamp", "timestamp": 0 }
+
+CHAT (client → server → recipient): 
+{ "id": "message_id", "type": "CHAT", "from": "sender", "to": "recipient", "body": "message", "timestamp": 0 }
+
+ACK (server → sender): 
+{ "id": "ack_id", "type": "ACK", "from": "server", "to": "sender", "body": "original_message_id", "timestamp": 0 }
+
+SYNC (server → joining client): 
+{ "id": "message_id", "type": "SYNC", "from": "sender", "to": "recipient", "body": "message", "timestamp": 0 }
+
+ERROR (server → client): 
+{ "id": "error_id", "type": "ERROR", "from": "server", "to": "recipient", "body": "error_description", "timestamp": 0 }
