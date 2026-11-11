@@ -31,6 +31,7 @@ public class RawChatWebSocketHandler extends TextWebSocketHandler {
     
     @Override
     public void afterConnectionEstablished(WebSocketSession session) {
+        metrics.connectionOpened();
         System.out.println("Connected: " + session.getId());
     }
 
@@ -126,10 +127,10 @@ public class RawChatWebSocketHandler extends TextWebSocketHandler {
         Message saved = chat.saveIfNew(msg);
 
         if (saved == null) {
-            sendError(session, msg.getFrom(), "Duplicate message");
-            return;
+            send(session, new Message(
+            UUID.randomUUID().toString(), MessageType.ACK, "server", msg.getFrom(), msg.getId(), System.currentTimeMillis()));
+        return;
         }
-
         // Check whether the recipient is online.
         WebSocketSession recipient = sessions.getSession(saved.getTo());
 

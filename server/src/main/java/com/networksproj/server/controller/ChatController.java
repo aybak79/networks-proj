@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import com.networksproj.server.model.Message;
 import com.networksproj.server.model.MessageType;
 import com.networksproj.server.service.ChatService;
+import java.util.UUID;
 
 @Controller 
 public class ChatController {
@@ -26,7 +27,7 @@ public class ChatController {
         String sender = principal.getName();
         if (msg.getId() == null || msg.getTo() == null) {
             messaging.convertAndSendToUser(sender, "/queue/messages",
-                    new Message(null, MessageType.ERROR, "server", sender,
+                    new Message(UUID.randomUUID().toString(), MessageType.ERROR, "server", sender,
                             "id and to are required", System.currentTimeMillis()));
             return;
         }
@@ -38,7 +39,7 @@ public class ChatController {
             messaging.convertAndSendToUser(saved.getTo(), "/queue/messages", saved);
         }
         messaging.convertAndSendToUser(sender, "/queue/messages",
-        new Message(msg.getId(), MessageType.ACK, "server", sender,
-                null, System.currentTimeMillis()));
+        new Message(UUID.randomUUID().toString(), MessageType.ACK, "server", sender,
+                msg.getId(), System.currentTimeMillis()));
     }
 }
