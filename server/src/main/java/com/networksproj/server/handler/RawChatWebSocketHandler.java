@@ -21,18 +21,20 @@ public class RawChatWebSocketHandler extends TextWebSocketHandler {
     private final SessionService sessions;
     private final ChatService chat;
     private final ObjectMapper mapper;
-    
-    public RawChatWebSocketHandler(MetricsService metrics, SessionService sessions, ChatService chat, ObjectMapper mapper) {
+
+    public RawChatWebSocketHandler(MetricsService metrics, SessionService sessions,
+                                   ChatService chat, ObjectMapper mapper) {
         this.metrics = metrics;
         this.sessions = sessions;
         this.chat = chat;
         this.mapper = mapper;
     }
-    
+
     @Override
     public void afterConnectionEstablished(WebSocketSession session) {
         metrics.connectionOpened();
-        System.out.println("Connected: " + session.getId());
+        System.out.println("Connected: " + authenticatedUser(session)
+                + " (" + session.getId() + ")");
     }
 
     // Handles incoming messages.
@@ -42,10 +44,16 @@ public class RawChatWebSocketHandler extends TextWebSocketHandler {
 
         String payload = message.getPayload();
 
-        metrics.messageProcessed();
-        metrics.bytesProcessed(
-                payload.getBytes(StandardCharsets.UTF_8).length
-        );
+        // Count the bytes received (every frame, valid or not).
+        metrics.bytesProcessed(payload.getBytes(StandardCharsets.UTF_8).length);
+
+        // The identity comes from the verified token, never from the message.
+        String user = authenticatedUser(session);
+        if (user == null) {
+            sendError(session, null, "Not authenticated");
+            session.close(CloseStatus.POLICY_VIOLATION);
+            return;
+        }
 
         Message msg;
 
@@ -57,22 +65,24 @@ public class RawChatWebSocketHandler extends TextWebSocketHandler {
             return;
         }
 
-        if (msg.getType() == null || msg.getFrom() == null) {
+        if (msg == null || msg.getType() == null || msg.getFrom() == null) {
             sendError(session, null, "Type and sender are required");
             return;
         }
 
-        // Handle the message according to its type.
-        if (msg.getType() == MessageType.JOIN) {
-            handleJoin(session, msg);
-         } 
-        else if (msg.getType() == MessageType.CHAT) {
-             handleChat(session, msg);
-         } 
-        else 
-        {sendError(session, msg.getFrom(), "Invalid message type"); }
-
+        // The sender field must match the logged-in user (no impersonation).
+        if (!user.equals(msg.getFrom())) {
+            sendError(session, user, "Sender does not match the logged-in user");
+            return;
         }
+
+        // Handle the message according to its type.
+        switch (msg.getType()) {
+            case JOIN -> handleJoin(session, msg);
+            case CHAT -> handleChat(session, msg);
+            default -> sendError(session, msg.getFrom(), "Invalid message type");
+        }
+    }
 
     // Registers a user and retrieves their missed messages.
     private void handleJoin(WebSocketSession session, Message msg)
@@ -83,11 +93,7 @@ public class RawChatWebSocketHandler extends TextWebSocketHandler {
             return;
         }
 
-        sessions.register(msg.getFrom(), session);
-
-        send(session, new Message(UUID.randomUUID().toString(),MessageType.ACK, "server",msg.getFrom(),"JOIN successful",System.currentTimeMillis()));
-
-        // Get the timestamp of the last received message.
+        // Validate the sync timestamp BEFORE registering or acknowledging.
         long since = 0;
 
         if (msg.getBody() != null) {
@@ -99,11 +105,15 @@ public class RawChatWebSocketHandler extends TextWebSocketHandler {
             }
         }
 
+        sessions.register(msg.getFrom(), session);
+
+        send(session, new Message(UUID.randomUUID().toString(), MessageType.ACK,
+                "server", msg.getFrom(), "JOIN successful", System.currentTimeMillis()));
+
         // Retrieve messages missed while offline.
         for (Message missed : chat.missedMessages(msg.getFrom(), since)) {
-
-            Message syncMessage = new Message(missed.getId(),MessageType.SYNC,missed.getFrom(), missed.getTo(),missed.getBody(),missed.getTimestamp());
-
+            Message syncMessage = new Message(missed.getId(), MessageType.SYNC,
+                    missed.getFrom(), missed.getTo(), missed.getBody(), missed.getTimestamp());
             send(session, syncMessage);
         }
     }
@@ -127,11 +137,15 @@ public class RawChatWebSocketHandler extends TextWebSocketHandler {
         Message saved = chat.saveIfNew(msg);
 
         if (saved == null) {
-            send(session, new Message(
-            UUID.randomUUID().toString(), MessageType.ACK, "server", msg.getFrom(), msg.getId(), System.currentTimeMillis()));
-        return;
+            // Duplicate: the message is already stored, so just re-confirm it.
+            sendAck(session, msg);
+            return;
         }
-        // Check whether the recipient is online.
+
+        // Count only new, accepted chat messages.
+        metrics.messageProcessed();
+
+        // Deliver to the recipient if they are online.
         WebSocketSession recipient = sessions.getSession(saved.getTo());
 
         if (recipient != null && recipient.isOpen()) {
@@ -139,8 +153,13 @@ public class RawChatWebSocketHandler extends TextWebSocketHandler {
         }
 
         // Confirm that the server accepted the message.
-        send(session, new Message(
-                UUID.randomUUID().toString(),MessageType.ACK,"server",msg.getFrom(), msg.getId(), System.currentTimeMillis() ));
+        sendAck(session, msg);
+    }
+
+    // Confirms that the server stored the message with this ID.
+    private void sendAck(WebSocketSession session, Message original) {
+        send(session, new Message(UUID.randomUUID().toString(), MessageType.ACK,
+                "server", original.getFrom(), original.getId(), System.currentTimeMillis()));
     }
 
     // Creates an ERROR message.
@@ -148,13 +167,13 @@ public class RawChatWebSocketHandler extends TextWebSocketHandler {
             WebSocketSession session, String username, String reason)
             throws Exception {
 
-        send(session, new Message( UUID.randomUUID().toString(),MessageType.ERROR, "server",username,reason,System.currentTimeMillis()));
+        send(session, new Message(UUID.randomUUID().toString(), MessageType.ERROR,
+                "server", username, reason, System.currentTimeMillis()));
     }
 
     // Converts a Message object into JSON and sends it.
     // Catches errors so one closed connection doesn't affect the server.
     private void send(WebSocketSession session, Message msg) {
-
         try {
             String json = mapper.writeValueAsString(msg);
 
@@ -168,6 +187,23 @@ public class RawChatWebSocketHandler extends TextWebSocketHandler {
             System.out.println("Could not send message: " + e.getMessage());
         }
     }
+
+    // Reads the username that JwtHandshakeInterceptor stored after checking the token.
+    private String authenticatedUser(WebSocketSession session) {
+        Object user = session.getAttributes().get("username");
+        return (user instanceof String s) ? s : null;
+    }
+
+    // A network error on one socket: close only that socket.
+    @Override
+    public void handleTransportError(WebSocketSession session, Throwable exception)
+            throws Exception {
+        System.out.println("Transport error: " + exception.getMessage());
+        if (session.isOpen()) {
+            session.close(CloseStatus.SERVER_ERROR);
+        }
+    }
+
     // Removes a user when their connection closes.
     @Override
     public void afterConnectionClosed(
@@ -177,5 +213,3 @@ public class RawChatWebSocketHandler extends TextWebSocketHandler {
         metrics.connectionClosed();
     }
 }
-    
-    
