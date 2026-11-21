@@ -133,6 +133,11 @@ public class RawChatWebSocketHandler extends TextWebSocketHandler {
             return;
         }
 
+        if (msg.getBody().length() > 2000) {
+            sendError(session, msg.getFrom(), "Message too long (max 2000 characters)");
+            return;
+        }
+        
         // Save the message before delivering it.
         Message saved = chat.saveIfNew(msg);
 

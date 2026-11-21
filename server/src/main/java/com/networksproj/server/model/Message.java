@@ -24,6 +24,7 @@ public class Message {
     @Column(name = "recipient")
     private String to;
 
+    @Column(length = 2000)
     private String body;
 
     @Column(name = "sent_at")
