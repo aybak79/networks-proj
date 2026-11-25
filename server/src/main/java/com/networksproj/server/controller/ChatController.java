@@ -28,18 +28,23 @@ public class ChatController {
     public void send(@Payload Message msg, Principal principal) {
         if (principal == null) return;
         String sender = principal.getName();
+
         if (msg.getId() == null || msg.getTo() == null) {
-            messaging.convertAndSendToUser(sender, "/queue/messages",
-                    new Message(UUID.randomUUID().toString(), MessageType.ERROR, "server", sender,
-                            "id and to are required", System.currentTimeMillis()));
+            sendError(sender, "id and to are required");
             return;
         }
-                if (msg.getBody() != null && msg.getBody().length() > 2000) {
-            messaging.convertAndSendToUser(sender, "/queue/messages",
-                    new Message(UUID.randomUUID().toString(), MessageType.ERROR, "server", sender,
-                            "Message too long (max 2000 characters)", System.currentTimeMillis()));
+
+        if (msg.getBody() != null && msg.getBody().length() > 2000) {
+            sendError(sender, "Message too long (max 2000 characters)");
             return;
         }
+
+        // The recipient must be a registered user.
+        if (!chatService.userExists(msg.getTo())) {
+            sendError(sender, "User not found: " + msg.getTo());
+            return;
+        }
+
         msg.setFrom(sender);
         msg.setType(MessageType.CHAT);
 
@@ -48,8 +53,28 @@ public class ChatController {
             metrics.messageProcessed();
             messaging.convertAndSendToUser(saved.getTo(), "/queue/messages", saved);
         }
+
         messaging.convertAndSendToUser(sender, "/queue/messages",
-        new Message(UUID.randomUUID().toString(), MessageType.ACK, "server", sender,
-                msg.getId(), System.currentTimeMillis()));
+                new Message(UUID.randomUUID().toString(), MessageType.ACK, "server", sender,
+                        msg.getId(), System.currentTimeMillis()));
+    }
+
+    private void sendError(String user, String reason) {
+        messaging.convertAndSendToUser(user, "/queue/messages",
+                new Message(UUID.randomUUID().toString(), MessageType.ERROR, "server", user,
+                        reason, System.currentTimeMillis()));
+    }
+
+    @MessageMapping("/chat.delivered")
+    public void delivered(@Payload Message msg, Principal principal) {
+        if (principal == null || msg.getBody() == null) return;
+        String receiver = principal.getName();
+
+        Message original = chatService.markDelivered(msg.getBody(), receiver);
+        if (original == null) return;
+
+        messaging.convertAndSendToUser(original.getFrom(), "/queue/messages",
+                new Message(UUID.randomUUID().toString(), MessageType.DELIVERED,
+                        receiver, original.getFrom(), original.getId(), System.currentTimeMillis()));
     }
 }

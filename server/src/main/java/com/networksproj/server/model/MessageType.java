@@ -5,5 +5,7 @@ public enum MessageType {
     CHAT, //a message sent by the client to the receiver, saved by the server
     ACK, //server confirms that it got the CHAT, body= CHAT id
     SYNC, //server resends any missing messages sent since client was offline
-    ERROR //server tells the client that there's a problem, body=reason
+    ERROR, //server tells the client that there's a problem, body=reason
+    DELIVERED, //receiver confirms it got a CHAT, body = CHAT id
+    READ //receiver opened the chat, body = receiver's username
 }

@@ -80,6 +80,7 @@ public class RawChatWebSocketHandler extends TextWebSocketHandler {
         switch (msg.getType()) {
             case JOIN -> handleJoin(session, msg);
             case CHAT -> handleChat(session, msg);
+            case DELIVERED -> handleDelivered(session, msg);
             default -> sendError(session, msg.getFrom(), "Invalid message type");
         }
     }
@@ -119,6 +120,7 @@ public class RawChatWebSocketHandler extends TextWebSocketHandler {
     }
 
     // Saves and delivers a chat message.
+        // Saves and delivers a chat message.
     private void handleChat(WebSocketSession session, Message msg)
             throws Exception {
 
@@ -137,7 +139,13 @@ public class RawChatWebSocketHandler extends TextWebSocketHandler {
             sendError(session, msg.getFrom(), "Message too long (max 2000 characters)");
             return;
         }
-        
+
+        // The recipient must be a registered user.
+        if (!chat.userExists(msg.getTo())) {
+            sendError(session, msg.getFrom(), "User not found: " + msg.getTo());
+            return;
+        }
+
         // Save the message before delivering it.
         Message saved = chat.saveIfNew(msg);
 
@@ -161,10 +169,38 @@ public class RawChatWebSocketHandler extends TextWebSocketHandler {
         sendAck(session, msg);
     }
 
+    // Receiver confirms a CHAT reached their device; tell the original sender.
+    private void handleDelivered(WebSocketSession session, Message msg) throws Exception {
+        if (msg.getBody() == null) {
+            sendError(session, msg.getFrom(), "DELIVERED requires the message id in body");
+            return;
+        }
+
+        Message original = chat.markDelivered(msg.getBody(), msg.getFrom());
+        if (original == null) {
+            sendError(session, msg.getFrom(), "Unknown message");
+            return;
+        }
+
+        WebSocketSession sender = sessions.getSession(original.getFrom());
+        if (sender != null && sender.isOpen()) {
+            send(sender, new Message(UUID.randomUUID().toString(), MessageType.DELIVERED,
+                    msg.getFrom(), original.getFrom(), original.getId(), System.currentTimeMillis()));
+        }
+    }
+
     // Confirms that the server stored the message with this ID.
     private void sendAck(WebSocketSession session, Message original) {
         send(session, new Message(UUID.randomUUID().toString(), MessageType.ACK,
                 "server", original.getFrom(), original.getId(), System.currentTimeMillis()));
+    }
+
+        // Lets other classes push a message to a user over the raw socket, if they are online.
+    public void notifyUser(String username, Message msg) {
+        WebSocketSession s = sessions.getSession(username);
+        if (s != null && s.isOpen()) {
+            send(s, msg);
+        }
     }
 
     // Creates an ERROR message.

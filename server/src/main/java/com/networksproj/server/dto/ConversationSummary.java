@@ -6,11 +6,13 @@ package com.networksproj.server.dto;
  * @param lastMessageId
  * @param lastFrom
  * @param timestamp
+ * @param unread
  */
 public record ConversationSummary(
         String friend,
         String lastMessage,
         String lastMessageId,
         String lastFrom,
-        long timestamp) {
+        long timestamp,
+        int unread) {
 }
