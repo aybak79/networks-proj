@@ -3,8 +3,9 @@ import './StateView.css'
 
 const ICONS = { loading: LoaderCircle, empty: MessagesSquare, error: TriangleAlert }
 
-export default function StateView({ type, title, subtitle, actionLabel, onAction }) {
-  const Icon = ICONS[type]
+// `icon` lets a screen use a different icon than the default one for its type
+export default function StateView({ type, title, subtitle, actionLabel, onAction, icon }) {
+  const Icon = icon ?? ICONS[type]
   return (
     <div className={`stateview stateview--${type}`}>
       <div className="stateview__badge">

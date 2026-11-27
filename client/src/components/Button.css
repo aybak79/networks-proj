@@ -3,3 +3,7 @@
   background: var(--primary); color: var(--on-primary);
   font: inherit; font-size: 16px; font-weight: 600; cursor: pointer;
 }
+.btn:disabled {
+  background: color-mix(in srgb, var(--primary) 40%, transparent);
+  cursor: not-allowed;
+}

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { Activity, LogOut, Settings } from 'lucide-react'
 import ConnectionBanner from '../components/ConnectionBanner'
 import ConversationItem from '../components/ConversationItem'
+import Fab from '../components/Fab'
 import MenuButton from '../components/MenuButton'
 import StateView from '../components/StateView'
 import { useAuth } from '../context/authContext'
@@ -69,6 +70,7 @@ export default function ConversationsPage() {
       </header>
       <ConnectionBanner state={connection} onRetry={retry} />
       {body}
+      {conversationsStatus === 'ready' && <Fab onClick={() => navigate('/new-chat')} />}
     </div>
   )
 }

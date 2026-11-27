@@ -36,11 +36,11 @@ export default function ChatPage() {
   return (
     <div className="chat">
       <header className="chat__header">
-        <Link to="/chats" className="icon-btn" aria-label="Back"><ArrowLeft size={22} /></Link>
-        <Avatar size={28} />
+        <Link to="/chats" className="icon-btn" aria-label="Back"><ArrowLeft size={24} /></Link>
+        <Avatar size={20} />
         <span className="chat__name">{peer}</span>
-        <button type="button" className="icon-btn" aria-label="Video call"><Video size={20} /></button>
-        <button type="button" className="icon-btn" aria-label="Voice call"><Phone size={20} /></button>
+        <button type="button" className="icon-btn" aria-label="Video call"><Video size={22} /></button>
+        <button type="button" className="icon-btn" aria-label="Voice call"><Phone size={19} /></button>
         <button type="button" className="icon-btn" aria-label="Menu"><EllipsisVertical size={20} /></button>
       </header>
       <ConnectionBanner state={connection} onRetry={retry} />

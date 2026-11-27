@@ -3,7 +3,8 @@ import { formatClock, formatListTime } from '../utils/time'
 // Pure functions that turn what the server sends into what the screens show, and keep
 // message lists free of duplicates. No React in here, so they are easy to test.
 
-export const STATUS_RANK = { sending: 0, failed: 0, sent: 1, delivered: 2 }
+// sending -> sent (server has it) -> delivered (friend's app received it) -> seen (friend opened the chat)
+export const STATUS_RANK = { sending: 0, failed: 0, sent: 1, delivered: 2, seen: 3 }
 
 // GET /api/conversations item -> row in the Chats list. The friend's username is the id.
 export function toUiConversation(c) {
@@ -17,7 +18,7 @@ export function toUiConversation(c) {
   }
 }
 
-// Server message -> bubble. Messages I sent show "sent", or "delivered" once the friend got/read them.
+// Server message -> bubble. Messages I sent show sent, delivered (friend got it) or seen (friend read it).
 export function toUiMessage(m, me) {
   const mine = m.from === me
   return {
@@ -26,7 +27,7 @@ export function toUiMessage(m, me) {
     text: m.body,
     timestamp: m.timestamp,
     time: formatClock(m.timestamp),
-    ...(mine ? { status: m.delivered || m.read ? 'delivered' : 'sent' } : {}),
+    ...(mine ? { status: m.read ? 'seen' : m.delivered ? 'delivered' : 'sent' } : {}),
   }
 }
 

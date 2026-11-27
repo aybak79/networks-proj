@@ -1,0 +1,7 @@
+.fab {
+  position: absolute; right: 16px; bottom: 16px;
+  display: flex; align-items: center; justify-content: center;
+  width: 56px; height: 56px; border: none; border-radius: 50%; cursor: pointer;
+  background: var(--primary); color: var(--on-primary);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}

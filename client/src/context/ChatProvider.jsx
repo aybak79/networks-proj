@@ -76,13 +76,16 @@ function ChatSession({ children }) {
     )
   }, [patchMessage])
 
-  const markAllDelivered = useCallback((peer) => {
+  // The friend opened the chat: everything we sent them that arrived is now seen
+  const markAllSeen = useCallback((peer) => {
     setMessagesByPeer((prev) => {
       const list = prev[peer]
       if (!list) return prev
       return {
         ...prev,
-        [peer]: list.map((m) => (m.from === 'me' && m.status === 'sent' ? { ...m, status: 'delivered' } : m)),
+        [peer]: list.map((m) =>
+          m.from === 'me' && (m.status === 'sent' || m.status === 'delivered') ? { ...m, status: 'seen' } : m
+        ),
       }
     })
   }, [])
@@ -193,14 +196,14 @@ function ChatSession({ children }) {
         advance(msg.from, msg.body, 'delivered')
         break
       case 'READ':
-        // the friend opened the chat
-        markAllDelivered(msg.from)
+        // the friend opened the chat (msg.from = the friend)
+        markAllSeen(msg.from)
         break
       case 'ERROR':
         console.warn('Server error:', msg.body)
         break
     }
-  }, [receiveMessage, advance, markAllDelivered])
+  }, [receiveMessage, advance, markAllSeen])
 
   // Runs every time the connection becomes ready (first time and after each reconnect).
   const handleOnline = useCallback(() => {

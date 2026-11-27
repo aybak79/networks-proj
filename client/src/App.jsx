@@ -4,6 +4,7 @@ import { useAuth } from './context/authContext'
 import ChatPage from './pages/ChatPage'
 import ConversationsPage from './pages/ConversationsPage'
 import LoginPage from './pages/LoginPage'
+import NewChatPage from './pages/NewChatPage'
 import RegisterPage from './pages/RegisterPage'
 import SessionExpiredPage from './pages/SessionExpiredPage'
 
@@ -24,6 +25,7 @@ export default function App() {
       <Route element={<RequireAuth />}>
         <Route path="/chats" element={<ConversationsPage />} />
         <Route path="/chats/:id" element={<ChatPage />} />
+        <Route path="/new-chat" element={<NewChatPage />} />
         {/* TEMP placeholders until these pages are built */}
         <Route path="/settings" element={<p style={{ padding: 24 }}>Settings (coming next)</p>} />
         <Route path="/metrics" element={<p style={{ padding: 24 }}>Metrics (coming next)</p>} />
