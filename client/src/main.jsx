@@ -7,11 +7,17 @@ import '@fontsource/inter/600.css'
 import '@fontsource/inter/700.css'
 import './styles/theme.css'
 import App from './App.jsx'
+import AuthProvider from './context/AuthProvider.jsx'
+import ChatProvider from './context/ChatProvider.jsx'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
-      <App />
+      <AuthProvider>
+        <ChatProvider>
+          <App />
+        </ChatProvider>
+      </AuthProvider>
     </BrowserRouter>
   </StrictMode>
 )

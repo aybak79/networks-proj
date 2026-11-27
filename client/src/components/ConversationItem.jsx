@@ -4,7 +4,7 @@ import './ConversationItem.css'
 
 export default function ConversationItem({ id, name, lastMessage, time, unread }) {
   return (
-    <Link to={`/chats/${id}`} className="convo">
+    <Link to={`/chats/${encodeURIComponent(id)}`} className="convo">
       <Avatar />
       <div className="convo__body">
         <span className="convo__name">{name}</span>

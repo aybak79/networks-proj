@@ -20,6 +20,7 @@ export default function InputBar({ onSend }) {
         value={text}
         onChange={(e) => setText(e.target.value)}
         placeholder="Type a message"
+        maxLength={2000}
       />
       <button className="inputbar__send" type="submit" aria-label="Send"><Send size={20} /></button>
     </form>

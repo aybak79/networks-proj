@@ -1,24 +1,40 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import Button from '../components/Button'
 import Logo from '../components/Logo'
 import TextField from '../components/TextField'
-import Button from '../components/Button'
+import { useAuth } from '../context/authContext'
+import { login } from '../services/authService'
 import './AuthPage.css'
 
 export default function LoginPage() {
   const navigate = useNavigate()
+  const { signIn } = useAuth()
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
+  const [busy, setBusy] = useState(false)
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault()
-    // MOCK: accepts any non-empty login. Replace with a backend call later.
+    if (busy) return
     if (!username || !password) {
       setError('Incorrect username or password')
       return
     }
-    navigate('/chats')
+    setBusy(true)
+    try {
+      const result = await login(username, password)
+      signIn(result.token, result.username)
+      navigate('/chats')
+    } catch (err) {
+      // 400/401 = the server rejected the credentials; anything else = the server is not answering
+      setError(err.status === 400 || err.status === 401
+        ? 'Incorrect username or password'
+        : 'Couldn’t reach the server')
+    } finally {
+      setBusy(false)
+    }
   }
 
   return (

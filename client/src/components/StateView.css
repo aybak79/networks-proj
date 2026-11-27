@@ -1,0 +1,17 @@
+.stateview {
+  flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 12px; padding: 24px; text-align: center;
+}
+.stateview__badge {
+  display: flex; align-items: center; justify-content: center;
+  width: 64px; height: 64px; border-radius: 50%;
+  background: var(--bubble-received); color: var(--primary);
+}
+.stateview--loading .stateview__badge { color: var(--text); }
+.stateview__title { margin: 0; font-size: 18px; font-weight: 600; }
+.stateview__subtitle { margin: 0; width: 260px; font-size: 14px; color: var(--text-muted); }
+.stateview__action {
+  padding: 12px 24px; border: none; border-radius: 12px; cursor: pointer;
+  background: var(--primary); color: var(--on-primary);
+  font: inherit; font-size: 16px; font-weight: 600;
+}

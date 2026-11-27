@@ -30,3 +30,8 @@ body { margin: 0; background: var(--bg); color: var(--text); }
   display: flex; padding: 8px; background: none; border: none;
   color: var(--text); text-decoration: none; cursor: pointer;
 }
+
+@keyframes spin { to { transform: rotate(360deg); } }
+.spin { animation: spin 1s linear infinite; }
+
+.page-center { display: flex; flex-direction: column; min-height: 100dvh; max-width: 480px; margin: 0 auto; }

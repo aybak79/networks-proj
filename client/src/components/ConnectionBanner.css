@@ -1,0 +1,17 @@
+.banner {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 8px 16px; font-size: 13px; color: var(--text);
+}
+.banner__icon { flex-shrink: 0; }
+.banner--connecting { background: var(--bubble-received); }
+.banner--connecting .banner__icon { color: var(--primary); }
+.banner--reconnecting { background: var(--highlight); }
+.banner--reconnecting .banner__icon { color: var(--text); }
+.banner--disconnected, .banner--error {
+  background: color-mix(in srgb, var(--error) 12%, transparent);
+}
+.banner--disconnected .banner__icon, .banner--error .banner__icon { color: var(--error); }
+.banner__retry {
+  padding: 0; border: none; background: none; cursor: pointer;
+  font: inherit; font-size: 13px; font-weight: 600; color: var(--primary);
+}
