@@ -9,6 +9,9 @@ import './styles/theme.css'
 import App from './App.jsx'
 import AuthProvider from './context/AuthProvider.jsx'
 import ChatProvider from './context/ChatProvider.jsx'
+import { applyTheme, getStoredTheme } from './utils/theme'
+
+applyTheme(getStoredTheme()) // before the first paint, so there is no flash of the wrong theme
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

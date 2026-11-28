@@ -4,9 +4,11 @@ import { useAuth } from './context/authContext'
 import ChatPage from './pages/ChatPage'
 import ConversationsPage from './pages/ConversationsPage'
 import LoginPage from './pages/LoginPage'
+import MetricsPage from './pages/MetricsPage'
 import NewChatPage from './pages/NewChatPage'
 import RegisterPage from './pages/RegisterPage'
 import SessionExpiredPage from './pages/SessionExpiredPage'
+import SettingsPage from './pages/SettingsPage'
 
 // "/" sends you to the chats if you are logged in, otherwise to the login page
 function Home() {
@@ -26,9 +28,8 @@ export default function App() {
         <Route path="/chats" element={<ConversationsPage />} />
         <Route path="/chats/:id" element={<ChatPage />} />
         <Route path="/new-chat" element={<NewChatPage />} />
-        {/* TEMP placeholders until these pages are built */}
-        <Route path="/settings" element={<p style={{ padding: 24 }}>Settings (coming next)</p>} />
-        <Route path="/metrics" element={<p style={{ padding: 24 }}>Metrics (coming next)</p>} />
+        <Route path="/settings" element={<SettingsPage />} />
+        <Route path="/metrics" element={<MetricsPage />} />
       </Route>
     </Routes>
   )

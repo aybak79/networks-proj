@@ -5,7 +5,10 @@
 }
 /* min-width: 0 is what lets the preview truncate with "..." inside a flex row */
 .convo__body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; padding: 10px; }
-.convo__name { font-size: 16px; font-weight: 400; }
+.convo__name {
+  font-size: 16px; font-weight: 400;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; /* long usernames end in "..." */
+}
 .convo__preview {
   font-size: 16px; color: var(--text-muted);
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;

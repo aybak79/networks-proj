@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Users } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+import { Users } from 'lucide-react'
 import Button from '../components/Button'
 import ConnectionBanner from '../components/ConnectionBanner'
 import Dropdown from '../components/Dropdown'
+import PageHeader from '../components/PageHeader'
 import StateView from '../components/StateView'
 import { useChat } from '../context/chatContext'
 import { searchUsers } from '../services/chatApi'
@@ -65,10 +66,7 @@ export default function NewChatPage() {
 
   return (
     <div className="newchat">
-      <header className="newchat__header">
-        <Link to="/chats" className="newchat__back" aria-label="Back"><ArrowLeft size={24} /></Link>
-        <span className="newchat__title">New chat</span>
-      </header>
+      <PageHeader title="New chat" />
       <ConnectionBanner state={connection} onRetry={retry} />
       {body}
     </div>

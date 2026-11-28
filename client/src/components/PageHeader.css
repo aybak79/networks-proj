@@ -1,0 +1,3 @@
+.pageheader { display: flex; align-items: center; gap: 30px; height: 53px; padding: 0 10px; background: var(--surface); }
+.pageheader__back { display: flex; padding: 5px; margin: -5px; color: var(--text); } /* bigger tap area, same layout */
+.pageheader__title { font-size: 16px; font-weight: 600; }

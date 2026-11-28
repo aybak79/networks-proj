@@ -7,3 +7,8 @@
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .chat__list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; padding: 16px; }
+
+/* very narrow phones: tighter gaps so the contact name still has room */
+@media (max-width: 360px) {
+  .chat__header { gap: 14px; }
+}
